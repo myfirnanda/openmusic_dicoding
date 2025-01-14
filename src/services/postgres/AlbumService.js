@@ -49,7 +49,7 @@ class AlbumService {
                     songs.title AS song_title, 
                     songs.performer AS song_performer
                 FROM albums 
-                LEFT JOIN songs ON albums.id = songs.albumId
+                LEFT JOIN songs ON albums.id = songs."albumId"
                 WHERE albums.id = $1
             `,
             values: [id],
@@ -73,7 +73,9 @@ class AlbumService {
         };
     }
 
-    async editAlbumById(id, { name, year, updatedAt}) {
+    async editAlbumById(id, { name, year }) {
+        const updatedAt = new Date().toISOString();
+
         const query = {
             text: `
                 UPDATE
@@ -81,14 +83,14 @@ class AlbumService {
                 SET
                     name = $1,
                     year = $2,
-                    update_at = $3
+                    updated_at = $3
                 WHERE id = $4`,
             values: [name, year, updatedAt, id],
         };
 
         const result = await this._pool.query(query);
 
-        if (!result.rows.length) {
+        if (!result.rowCount) {
             throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan');
         }
     }
@@ -97,14 +99,15 @@ class AlbumService {
         const query = {
             text: `
                 DELETE FROM albums
-                WHERE id = $1`,
+                WHERE id = $1
+                RETURNING id`,
             values: [id],
         };
 
         const result = await this._pool.query(query);
 
-        if (!result.rows.length) {
-            throw new Error('Catatan gagal dihapus. Id tidak ditemukan');
+        if (!result.rowCount) {
+            throw new NotFoundError('Catatan gagal dihapus. Id tidak ditemukan');
         }
     }
 }
