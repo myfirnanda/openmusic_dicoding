@@ -1,8 +1,8 @@
-const { nanoid } = require("nanoid");
-const { Pool } = require("pg");
+const { nanoid } = require('nanoid');
+const { Pool } = require('pg');
 const InVariantError = require('../../api/exceptions/InVariantError');
 const NotFoundError = require('../../api/exceptions/NotFoundError');
-const mapDBToModel = require("../../utils");
+const mapDBToModel = require('../../utils');
 
 class AlbumService {
     constructor() {

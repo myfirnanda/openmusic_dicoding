@@ -1,8 +1,8 @@
-const { nanoid } = require("nanoid");
-const { Pool } = require("pg");
-const InVariantError = require("../../api/exceptions/InVariantError");
-const NotFoundError = require("../../api/exceptions/NotFoundError");
-const mapDBToModel = require("../../utils");
+const { nanoid } = require('nanoid');
+const { Pool } = require('pg');
+const InVariantError = require('../../api/exceptions/InVariantError');
+const NotFoundError = require('../../api/exceptions/NotFoundError');
+const mapDBToModel = require('../../utils');
 
 class SongService {
     constructor() {
@@ -47,7 +47,7 @@ class SongService {
 
     async getSongById(id) {
         const query = {
-            text: `SELECT * FROM songs WHERE id = $1`,
+            text: 'SELECT * FROM songs WHERE id = $1',
             values: [id],
         };
 

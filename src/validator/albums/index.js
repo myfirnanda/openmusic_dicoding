@@ -1,5 +1,5 @@
-const AlbumPayloadSchema = require("./schema");
-const InVariantError = require("../../api/exceptions/InVariantError");
+const AlbumPayloadSchema = require('./schema');
+const InVariantError = require('../../api/exceptions/InVariantError');
 
 const AlbumsValidator = {
     validateAlbumPayload: payload => {
