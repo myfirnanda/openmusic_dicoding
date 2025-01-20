@@ -9,50 +9,40 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-    pgm.createTable('songs', {
+    pgm.createTable('collaborations', {
         id: {
             type: 'VARCHAR(50)',
             primaryKey: true,
         },
-        title: {
+        playlist_id: {
+            type: 'VARCHAR(50)',
+            notNull: true,
+        },
+        user_id: {
+            type: 'VARCHAR(50)',
+            notNull: true,
+        },
+        created_at: {
             type: 'TEXT',
             notNull: true,
         },
-        year: {
-            type: 'INTEGER',
-            notNull: true,
-        },
-        genre: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-        },
-        performer: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-        },
-        duration: {
-            type: 'INTEGER',
-        },
-        albumId: {
-            type: 'VARCHAR(50)',
-        },
-        created_at: {
-            type: 'TIMESTAMP',
-            notNull: true,
-            default: pgm.func('CURRENT_TIMESTAMP'),
-        },
         updated_at: {
-            type: 'TIMESTAMP',
+            type: 'TEXT',
             notNull: true,
-            default: pgm.func('CURRENT_TIMESTAMP'),
         },
     });
 
     pgm.addConstraint(
-        'songs',
-        'fk_songs.albumId',
-        'FOREIGN KEY (albumId) REFERENCES songs(id) ON DELETE CASCADE',
-    )
+        'collaborations',
+        'fk_collaborations.playlist_id',
+        'FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE',
+    );
+
+    pgm.addConstraint(
+        'collaborations',
+        'fk_collaborations.user_id',
+        'FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE',
+    );
 };
 
 /**
@@ -61,6 +51,7 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-    pgm.dropConstraint('songs', 'fk_songs.albumId')
-    pgm.dropTable('songs');
+    pgm.dropConstraint('collaborations', 'fk_collaborations.playlist_id');
+    pgm.dropConstraint('collaborations', 'fk_collaborations.user_id');
+    pgm.dropTable('collaborations');
 };

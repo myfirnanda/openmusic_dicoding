@@ -9,50 +9,40 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-    pgm.createTable('songs', {
+    pgm.createTable('playlist_songs', {
         id: {
-            type: 'VARCHAR(50)',
+            type: 'TEXT',
             primaryKey: true,
         },
-        title: {
+        playlist_id: {
+            type: 'VARCHAR(50)',
+            notNull: true,
+        },
+        song_id: {
+            type: 'VARCHAR(50)',
+            notNull: true,
+        },
+        created_at: {
             type: 'TEXT',
             notNull: true,
         },
-        year: {
-            type: 'INTEGER',
-            notNull: true,
-        },
-        genre: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-        },
-        performer: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-        },
-        duration: {
-            type: 'INTEGER',
-        },
-        albumId: {
-            type: 'VARCHAR(50)',
-        },
-        created_at: {
-            type: 'TIMESTAMP',
-            notNull: true,
-            default: pgm.func('CURRENT_TIMESTAMP'),
-        },
         updated_at: {
-            type: 'TIMESTAMP',
+            type: 'TEXT',
             notNull: true,
-            default: pgm.func('CURRENT_TIMESTAMP'),
         },
     });
 
     pgm.addConstraint(
-        'songs',
-        'fk_songs.albumId',
-        'FOREIGN KEY (albumId) REFERENCES songs(id) ON DELETE CASCADE',
-    )
+        'playlist_songs',
+        'fk_playlist_songs.playlist_id',
+        'FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE',
+    );
+
+    pgm.addConstraint(
+        'playlist_songs',
+        'fk_playlist_songs.song_id',
+        'FOREIGN KEY (song_id) REFERENCES songs (id) ON DELETE CASCADE',
+    );
 };
 
 /**
@@ -61,6 +51,7 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-    pgm.dropConstraint('songs', 'fk_songs.albumId')
-    pgm.dropTable('songs');
+    pgm.dropConstraint('playlist_songs', 'fk_playlist_songs.playlist_id');
+    pgm.dropConstraint('playlist_songs', 'fk_playlist_songs.song_id');
+    pgm.dropTable('playlist_songs');
 };

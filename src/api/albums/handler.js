@@ -12,10 +12,12 @@ class AlbumHandler {
 
     async postAlbumHandler(request, h) {
         this._validator.validateAlbumPayload(request.payload);
-        console.log(request.payload);
         const { name, year } = request.payload;
+        const { id: credentialId } = request.auth.credentials;
 
-        const albumId = await this._service.addAlbum({ name, year });
+        const albumId = await this._service.addAlbum({
+            name, year, owner: credentialId
+        });
 
         const response = h.response({
             status: 'success',
@@ -26,8 +28,9 @@ class AlbumHandler {
         return response;
     }
 
-    async getAlbumsHandler() {
-        const albums = await this._service.getAlbums();
+    async getAlbumsHandler(request) {
+        const { id: credentialId } = request.auth.credentials;
+        const albums = await this._service.getAlbums(credentialId);
         return {
             status: 'success',
             data: { albums },
@@ -36,8 +39,9 @@ class AlbumHandler {
 
     async getAlbumByIdHandler(request) {
         const { id } = request.params;
+        const { id: credentialId } = request.auth.credentials;
 
-        const album = await this._service.getAlbumById(id);
+        const album = await this._service.getAlbumById(id, credentialId);
         return {
             status: 'success',
             data: { album },

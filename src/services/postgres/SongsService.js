@@ -1,10 +1,10 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
-const InVariantError = require('../../api/exceptions/InVariantError');
-const NotFoundError = require('../../api/exceptions/NotFoundError');
 const mapDBToModel = require('../../utils');
+const InVariantError = require('../../exceptions/InVariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
-class SongService {
+class SongsService {
     constructor() {
         this._pool = new Pool();
     }
@@ -103,4 +103,4 @@ class SongService {
     }
 }
 
-module.exports = SongService;
+module.exports = SongsService;
