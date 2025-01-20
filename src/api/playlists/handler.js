@@ -32,12 +32,12 @@ class PlaylistsHandler {
 
     async getPlaylistsHandler(request) {
         const { id: credentialId } = request.auth.credentials;
-
         const playlists = await this._service.getPlaylists(credentialId);
-
         return {
             status: 'success',
-            data: { playlists },
+            data: {
+                playlists,
+            },
         };
     }
 
@@ -78,11 +78,19 @@ class PlaylistsHandler {
         const { id: credentialId } = request.auth.credentials;
 
         await this._service.verifyPlaylistAccess(playlistId, credentialId);
-        const playlists = await this._service.getSongsFromPlaylistById(playlistId);
+
+        const playlist = await this._service.getPlaylistById(playlistId);
+
+        const songs = await this._service.getSongsFromPlaylistById(playlistId);
 
         return {
             status: 'success',
-            data: { playlists },
+            data: {
+                playlist: {
+                    ...playlist,
+                    songs,
+                },
+            },
         };
     }
 

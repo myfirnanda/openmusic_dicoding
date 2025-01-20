@@ -47,21 +47,40 @@ class PlaylistService {
         const query = {
             text: `
                 SELECT
-                    id,
-                    name,
-                    owner
-                FROM playlists p
-                LEFT JOIN collaboration c ON p.id = c.playlist_id
-                LEFT JOIN users u ON p.owner = u.id
-                WHERE p.owner = $1 OR c.user_id = $1
-                GROUP BY (p.id, u.username)
-            `,
+                    playlists.id,
+                    playlists.name,
+                    users.username
+                FROM playlists
+                LEFT JOIN users ON users.id = playlists.owner
+                LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
+                WHERE playlists.owner = $1 OR collaborations.user_id = $1`,
             values: [owner],
         };
 
         const result = await this._pool.query(query);
-
         return result.rows;
+    }
+
+    async getPlaylistById(playlistId) {
+        const query = {
+            text: `
+                SELECT
+                    playlists.id,
+                    playlists.name,
+                    users.username 
+                FROM playlists
+                JOIN users ON users.id = playlists.owner
+                WHERE playlists.id = $1`,
+            values: [playlistId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new NotFoundError('Playlist tidak ditemukan');
+        }
+
+        return result.rows[0];
     }
 
     async deletePlaylistById(id) {
@@ -117,50 +136,16 @@ class PlaylistService {
     }
 
     async getSongsFromPlaylistById(playlistId) {
-        const playlistQuery = {
-            text: `SELECT
-                        p.id,
-                        p.name,
-                        u.username
-                    FROM playlist_songs ps
-                    LEFT JOIN playlists p ON ps.playlist_id = p.id
-                    LEFT JOIN users u ON p.owner = u.id
-                    WHERE p.id = $1 AND ps.playlist_id = $1
-                    `,
+        const query = {
+            text: `SELECT songs.id, songs.title, songs.performer FROM songs
+            LEFT JOIN playlist_songs ON songs.id = playlist_songs.song_id
+            WHERE playlist_songs.playlist_id = $1`,
             values: [playlistId],
         };
 
-        const playlistResult = await this._pool.query(playlistQuery);
+        const result = await this._pool.query(query);
 
-        if (!playlistResult.rowCount) {
-            throw new NotFoundError('Playlist tidak ditemukan');
-        }
-
-        const songQuery = {
-            text: `
-                SELECT
-                    s.id
-                    s.title,
-                    s.performer
-                FROM playlist_songs ps
-                LEFT JOIN songs s ON ps.song_id = s.id
-                WHERE ps.playlist_id = $1
-            `,
-            values: [playlistId],
-        };
-
-        const songResult = await this._pool.query(songQuery);
-
-        if (!songResult.rowCount) {
-            throw new NotFoundError('Lagu tidak ditemukan dalam playlist');
-        }
-
-        return {
-            id: playlistResult.rows[0].id,
-            name: playlistResult.rows[0].name,
-            username: playlistResult.rows[0].username,
-            songs: songResult.rows,
-        };
+        return result.rows;
     }
 
     async deleteSongFromPlaylistById(playlistId, songId) {
