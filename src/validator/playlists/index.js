@@ -2,7 +2,6 @@ const InVariantError = require('../../exceptions/InVariantError');
 const {
     PlaylistsPayloadSchema,
     PlaylistSongsPayloadSchema,
-    PlaylistSongActivitiesPayloadSchema,
 } = require('./schema');
 
 const PlaylistValidator = {
@@ -20,13 +19,13 @@ const PlaylistValidator = {
             throw new InVariantError(validationResult.error.message);
         }
     },
-    validatePlaylistSongActivityPayload: payload => {
-        const validationResult = PlaylistSongActivitiesPayloadSchema.validate(payload);
+    // validatePlaylistSongActivityPayload: payload => {
+    //     const validationResult = PlaylistSongActivitiesPayloadSchema.validate(payload);
 
-        if (validationResult.error) {
-            throw new InVariantError(validationResult.error.message);
-        }
-    }
+    //     if (validationResult.error) {
+    //         throw new InVariantError(validationResult.error.message);
+    //     }
+    // }
 };
 
 module.exports = PlaylistValidator;

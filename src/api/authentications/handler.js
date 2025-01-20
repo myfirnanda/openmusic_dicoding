@@ -47,17 +47,17 @@ class AuthenticationHandler {
         };
     }
 
-    async deleteAuthenticationHandler(request) {
+    async deleteAuthenticationHandler(request, h) {
         this._validator.validateDeleteAuthenticationPayload(request.payload);
 
         const { refreshToken } = request.payload;
         await this._authenticationsService.verifyRefreshToken(refreshToken);
         await this._authenticationsService.deleteRefreshToken(refreshToken);
 
-        return {
+        return h.response({
             status: 'success',
             message: 'Refresh token berhasil dihapus',
-        };
+        }).code(200);
     }
 };
 
